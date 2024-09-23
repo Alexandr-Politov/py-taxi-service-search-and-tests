@@ -49,12 +49,26 @@ class TestSearchForms(TestCase):
             model="test_model",
             manufacturer=self.manufacturer
         )
+        self.form_data = {"search": "test"}
+        self.form = SearchForm(data=self.form_data)
 
-    def test_search_form(self) -> None:
-        form_data = {"username": "test"}
-        form = SearchForm(data=form_data)
-        self.assertTrue(form.is_valid())
+    def test_driver_search(self) -> None:
+        self.assertTrue(self.form.is_valid())
         drivers = get_user_model().objects.filter(
-            username__icontains=form_data["username"]
+            username__icontains=self.form_data["search"]
         )
         self.assertEqual(list(drivers), [self.driver])
+
+    def test_manufacturer_search(self) -> None:
+        self.assertTrue(self.form.is_valid())
+        manufacturers = Manufacturer.objects.filter(
+            name__icontains=self.form_data["search"]
+        )
+        self.assertEqual(list(manufacturers), [self.manufacturer])
+
+    def test_car_search(self) -> None:
+        self.assertTrue(self.form.is_valid())
+        cars = Car.objects.filter(
+            model__icontains=self.form_data["search"]
+        )
+        self.assertEqual(list(cars), [self.car])
